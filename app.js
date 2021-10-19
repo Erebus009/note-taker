@@ -1,19 +1,30 @@
-const { json } = require('express');
+const { json, response, text } = require('express');
 const express = require('express');
 const fs = require('fs');
-const path = require('path')
+const path = require('path');
+const { title } = require('process');
+var uuid = require('uuid')
+// Databse const to make it easier to read.
+const db = require('./db/db.json')
 // PORT server will open ti display
 const PORT = 3000;
 // Calls the express function to a const to be used in Methods (post,get,fetch...etc...etc)
 const app = express();
+
+
 // handles data parsing.
 app.use(express.urlencoded({extended:true}));
 app.use(express.json())
 
+
+
+
+
+
 // Set up the page to use public folder assets from one path file instead of naming all the paths one by one.
 app.use(express.static('public'));
 
-app.get('/',(req,res) =>{
+app.get('*',(req,res) =>{
     res.sendFile(path.join(__dirname, '/public/'))
 })
 
@@ -23,12 +34,56 @@ app.get('/notes',(req,res) => {
     res.sendFile(path.join(__dirname, 'public/notes.html'));
 
 })
-// GEt mothod to display notes database API
-app.get('/api/notes', (req,res) =>{
-    res.sendFile(path.join(__dirname, './db/db.json'))
+
+
+//GET method to display db.json database 
+app.get('/api/notes/', (req,res) => {
+    res.sendFile(path.join(__dirname, './db/db.json', ))
+
 })
 
 
+// post save note as json into database file on db.json.
+app.post('/api/notes/',(req,res) => {
+    
+    const {title,text} = req.body;
+
+    if(title && text){
+        const Note = {
+            title,
+            text,
+            noteId: uuid.v4()
+        }
+
+    fs.readFile('./db/db.json', 'utf8', (err,data) => {
+        if(err){
+            console.log(err);
+        } else {
+            const newNote = JSON.parse(data);
+            newNote.push(Note);
+
+
+            fs.writeFile('./db/db.json',
+            JSON.stringify(newNote,null,2),
+            (writeErr) => 
+                writeErr
+                ? console.error(writeErr)
+                : console.info('Created new note')
+            );
+
+
+        }
+    });
+    const response = {
+        staus: 'success',
+        body : Note,
+    };
+    console.log(response);
+        res.status(201).json(response)
+    }else {
+        res.status(500).json('Error in saving note to database');
+}
+}); 
 
 
 

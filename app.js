@@ -1,15 +1,18 @@
-const { json, response, text } = require('express');
+
 const express = require('express');
 const fs = require('fs');
 const path = require('path');
-const { title } = require('process');
 var uuid = require('uuid')
 // Databse const to make it easier to read.
-const db = require('./db/db.json')
+
+const notes = require('./db/db.json');
+
 // PORT server will open ti display
 const PORT = 3000;
 // Calls the express function to a const to be used in Methods (post,get,fetch...etc...etc)
 const app = express();
+
+
 
 
 // handles data parsing.
@@ -52,9 +55,9 @@ app.post('/api/notes/',(req,res) => {
         const Note = {
             title,
             text,
-            noteId: uuid.v4()
+            id: uuid.v4()
         }
-
+   
     fs.readFile('./db/db.json', 'utf8', (err,data) => {
         if(err){
             console.log(err);
@@ -62,7 +65,7 @@ app.post('/api/notes/',(req,res) => {
             const newNote = JSON.parse(data);
             newNote.push(Note);
 
-
+            
             fs.writeFile('./db/db.json',
             JSON.stringify(newNote,null,2),
             (writeErr) => 
@@ -87,8 +90,18 @@ app.post('/api/notes/',(req,res) => {
 
 
 
+app.get('/api/notes/:id', (req, res) => {
+    res.json(notes[req.params.id]);
+});
+   
 
-// listens to port and logs out for easy access with ctrl+click.
+app.delete("/api/notes/:id", (req,res) => {
+    notes.splice(req.params.id, 1);
+    console.log("Deleted note with id "+req.params.id);
+})
+
+
+// listens to port for conenctions and logs out for easy access with ctrl+click for user agent.
 app.listen(PORT, () => {
     console.log(`Listening on http://localhost:${PORT}`);
 })

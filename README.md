@@ -21,9 +21,10 @@
   * [Questions](#Questions)
 
   ## Installation
-  <code>n/a</code>
+      git clone https://github.com/Erebus009/note-taker.git
+      node index
   ## Usage
-  <code>n/a</code>
+      n/a all done from front end. 
   
   ## Tests
   <code>npm test</code>

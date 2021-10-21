@@ -22,7 +22,7 @@
 
   ## Installation
       git clone https://github.com/Erebus009/note-taker.git
-      node index
+      node app
   ## Usage
       n/a all done from front end. 
   

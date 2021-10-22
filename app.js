@@ -4,10 +4,11 @@ const express = require('express');
 const fs = require('fs');
 const path = require('path');
 var uuid = require('uuid')
+const notes = require('./db/db.json')
 
 
 // PORT server will open to display
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 // Calls the express function to a const to be used in Methods (post,get,fetch...etc...etc)
 const app = express();
 
@@ -26,7 +27,7 @@ app.use(express.json())
 // Set up the page to use public folder assets from one path file instead of naming all the paths one by one.
 app.use(express.static('public'));
 
-app.get('*',(req,res) =>{
+app.get('/',(req,res) =>{
     res.sendFile(path.join(__dirname, '/public/'))
 })
 
@@ -40,7 +41,7 @@ app.get('/notes',(req,res) => {
 
 //GET method to display db.json database 
 app.get('/api/notes/', (req,res) => {
-    res.sendFile(path.join(__dirname, './db/db.json', ))
+    res.status(200).json(notes)
 
 })
 
@@ -88,10 +89,37 @@ app.post('/api/notes/',(req,res) => {
 
 
 app.get("/api/notes/id", (req,res) => {
-    res.send(req.params.id)
+        const noteID = notes.map((note) => note.id);
+
+        const result = noteID.filter((note, i) => noteID.indexOf(note) === i);
+
+        return res.json(result)
+
+
 })
 
-   
+app.delete("api/notes/:id", (req,res) => {
+    removeNote(req.params.id)
+
+
+        function removeNote(NoteID){
+            fs.readFile('./db/db.json', 'utf8', (err,data) => {
+                console.log(data);
+            
+            const id = notes.map((note) => note.id);
+            if (id === req.params.id){
+              const results =  notes.filter(note => note.id === NoteID)
+              console.log(results);
+            } else {
+                return console.error('Error note not deleted');
+            }
+        })
+    }
+})
+
+        
+
+    
 
 
 

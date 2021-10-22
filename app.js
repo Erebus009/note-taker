@@ -88,6 +88,7 @@ app.post('/api/notes/',(req,res) => {
 }); 
 
 
+
 app.get("/api/notes/id", (req,res) => {
         const noteID = notes.map((note) => note.id);
 
@@ -97,6 +98,9 @@ app.get("/api/notes/id", (req,res) => {
 
 
 })
+
+
+
 
 app.delete("api/notes/:id", (req,res) => {
     removeNote(req.params.id)
